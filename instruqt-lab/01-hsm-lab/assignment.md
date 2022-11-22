@@ -2,7 +2,7 @@
 slug: hsm-lab
 id: pcgmqqwwuys2
 type: challenge
-title: "\U0001F3E1 How to setup Vault Enterprisewith AWS Cloud HSM Integration"
+title: "\U0001F3E1 How to setup Vault Enterprise with AWS Cloud HSM Integration"
 teaser: |
   How to setup Vault Enterprise with HSM Integration
 notes:
