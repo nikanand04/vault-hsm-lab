@@ -1,0 +1,18 @@
+slug: vault-hsm-lab
+id:
+type: track
+title: How to setup Vault Enterprise with HSM Integration
+teaser: |
+  Walkthrough the setup of Vault Enterprise with HSM Integration
+description: This track is a lab to walk through the steps in setting up Vault Enterprise with AWS Cloud HSM Integration
+icon: https://storage.googleapis.com/instruqt-hashicorp-tracks/logo/terraform.png
+tags:
+- hsm
+- vault-enterprise
+- aws
+owner: hashicorp
+developers:
+- jbradley@hashicorp.com
+private: true
+published: false
+checksum:
