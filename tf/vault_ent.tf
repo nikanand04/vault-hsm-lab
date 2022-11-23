@@ -1,14 +1,14 @@
-resource "aws_eip" "vault_2" {
-  instance = aws_instance.vault_2.id
+resource "aws_eip" "vault-ent" {
+  instance = aws_instance.vault-ent.id
   vpc      = true
 }
 
-resource "aws_eip_association" "vault_2" {
-  instance_id   = aws_instance.vault_2.id
-  allocation_id = aws_eip.vault_2.id
+resource "aws_eip_association" "vault-ent" {
+  instance_id   = aws_instance.vault-ent.id
+  allocation_id = aws_eip.vault-ent.id
 }
 
-resource "aws_instance" "vault_2" {
+resource "aws_instance" "vault-ent" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.vault.key_name
@@ -18,30 +18,26 @@ resource "aws_instance" "vault_2" {
   iam_instance_profile        = aws_iam_instance_profile.vault-dynamodb-instance-profile.name
 
   tags = {
-    Name = "${var.prefix}-vault-instance-2"
+    Name = "${var.prefix}-vault-ent-instance"
   }
-
-  depends_on = [
-    aws_dynamodb_table.vault_dynamo_2,
-  ]
 }
 
-resource "null_resource" "configure-vault-2" {
-  depends_on = [aws_eip_association.vault_2]
+resource "null_resource" "configure-vault-ent" {
+  depends_on = [aws_eip_association.vault-ent]
 
   # triggers = {
   #   build_number = timestamp()
   # }
 
   provisioner "file" {
-    source      = "./files/vault_dynamo_2/"
+    source      = "./files/vault_ent/"
     destination = "/home/ubuntu/"
 
     connection {
       type        = "ssh"
       user        = "ubuntu"
       private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault_2.public_ip
+      host        = aws_eip.vault-ent.public_ip
     }
   }
 
@@ -54,7 +50,7 @@ resource "null_resource" "configure-vault-2" {
       type        = "ssh"
       user        = "ubuntu"
       private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault_2.public_ip
+      host        = aws_eip.vault-ent.public_ip
     }
   }
 }

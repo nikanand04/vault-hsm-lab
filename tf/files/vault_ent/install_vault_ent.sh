@@ -2,14 +2,14 @@
 
 # echo "Running updates and installing unzip, jq"
 sudo apt update -y
-sudo apt install awscli unzip jq -y
+sudo apt install unzip jq -y
 
 echo "Installing Vault Enterprise"
 # Setup vault enterprise as server
 set -e
 
 # USER VARS
-VAULT_VERSION="1.9.3+ent"
+VAULT_VERSION="1.9.3"
 NODE_NAME="${1:-$(hostname -s)}"
 VAULT_DIR=/usr/local/bin
 VAULT_CONFIG_DIR=/etc/vault.d
@@ -17,8 +17,8 @@ VAULT_DATA_DIR=/opt/vault
 
 # CALCULATED VARS
 VAULT_PATH=${VAULT_DIR}/vault
-VAULT_ZIP="vault_${VAULT_VERSION}_linux_amd64.zip"
-VAULT_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/${VAULT_ZIP}"
+VAULT_ZIP="vault_${VAULT_VERSION}+ent_linux_amd64.zip"
+VAULT_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}+ent/${VAULT_ZIP}"
 
 # CHECK DEPENDANCIES AND SET NET RETRIEVAL TOOL
 if ! unzip -h 2&> /dev/null; then
@@ -75,19 +75,21 @@ sudo tee "${VAULT_CONFIG_DIR}/vault.hcl" > /dev/null <<VAULTCONFIG
 ui = true
 api_addr = ""
 cluster_addr = ""
-cluster_name="vault-dynamodb"
+cluster_name="vault-enterprise"
 
 listener "tcp" {
   address          = "0.0.0.0:8200"
   tls_disable      = "true"
 }
 
-# DynamoDB Backend
-storage "dynamodb" {
-  ha_enabled = "true"
-  region     = "us-west-2"
-  table      = "dynamo-1"
+# Integrated Storage Backend
+storage "raft" {
+  path    = "/opt/vault"
+  node_id = "vault-1"
 }
+
+# Enterprise License Auto-Load
+license_path = "/home/ubuntu/vault.hclic"
 VAULTCONFIG
 
 sudo sed -i "s|NODENAME|$NODE_NAME|g" "${VAULT_CONFIG_DIR}/vault.hcl"
@@ -137,11 +139,8 @@ SYSDSERVICE
 sudo sed -i "s|VAULTBINDIR|$VAULT_DIR|g" /etc/systemd/system/vault.service
 
 echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >> ~/.bashrc
-echo 'export AWS_DEFAULT_REGION=us-west-2' >> ~/.bashrc
 
 source ~/.bashrc
 
-echo "Starting Vault systemd service"
+echo "Enable Vault systemd service"
 sudo systemctl enable vault
-sudo systemctl start vault
-sudo systemctl status vault
