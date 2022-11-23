@@ -15,7 +15,7 @@ resource "aws_instance" "vault-ent" {
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.vault-a.id
   vpc_security_group_ids      = [aws_security_group.vault.id]
-  iam_instance_profile        = aws_iam_instance_profile.vault-dynamodb-instance-profile.name
+  # iam_instance_profile        = aws_iam_instance_profile.vault-dynamodb-instance-profile.name
 
   tags = {
     Name = "${var.prefix}-vault-ent-instance"
@@ -41,7 +41,7 @@ resource "null_resource" "configure-vault-ent" {
     }
   }
 
-    provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [
       "sudo sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config",
     ]
