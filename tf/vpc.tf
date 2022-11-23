@@ -51,3 +51,23 @@ resource "aws_subnet" "vault-a" {
     name = "${var.prefix}-subnet-a"
   }
 }
+
+resource "aws_subnet" "vault-b" {
+  vpc_id            = aws_vpc.vault.id
+  cidr_block        = var.subnet_prefix_b
+  availability_zone = "us-west-2b"
+
+  tags = {
+    name = "${var.prefix}-subnet-b"
+  }
+}
+
+resource "aws_route_table_association" "vault-a" {
+  subnet_id      = aws_subnet.vault-a.id
+  route_table_id = aws_route_table.vault.id
+}
+
+resource "aws_route_table_association" "vault-b" {
+  subnet_id      = aws_subnet.vault-b.id
+  route_table_id = aws_route_table.vault.id
+}
