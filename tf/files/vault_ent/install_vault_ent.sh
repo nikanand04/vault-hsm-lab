@@ -21,13 +21,13 @@ VAULT_ZIP="vault_${VAULT_VERSION}+ent_linux_amd64.zip"
 VAULT_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}+ent/${VAULT_ZIP}"
 
 # CHECK DEPENDANCIES AND SET NET RETRIEVAL TOOL
-if ! unzip -h 2&> /dev/null; then
+if ! unzip -h 2 &>/dev/null; then
   echo "aborting - unzip not installed and required"
   exit 1
 fi
-if curl -h 2&> /dev/null; then
+if curl -h 2 &>/dev/null; then
   nettool="curl"
-elif wget -h 2&> /dev/null; then
+elif wget -h 2 &>/dev/null; then
   nettool="wget"
 else
   echo "aborting - neither wget nor curl installed and required"
@@ -37,18 +37,18 @@ fi
 set +e
 
 # try to get private IP
-pri_ip=$(hostname -I 2> /dev/null | awk '{print $1}')
+pri_ip=$(hostname -I 2>/dev/null | awk '{print $1}')
 set -e
 
 # download and extract binary
 echo "Downloading and installing vault ${VAULT_VERSION}"
 case "${nettool}" in
-  wget)
-    wget --no-check-certificate "${VAULT_URL}" --output-document="${VAULT_ZIP}"
-    ;;
-  curl)
-    [ 200 -ne $(curl --write-out %{http_code} --silent --output ${VAULT_ZIP} ${VAULT_URL}) ] && exit 1
-    ;;
+wget)
+  wget --no-check-certificate "${VAULT_URL}" --output-document="${VAULT_ZIP}"
+  ;;
+curl)
+  [ 200 -ne $(curl --write-out %{http_code} --silent --output ${VAULT_ZIP} ${VAULT_URL}) ] && exit 1
+  ;;
 esac
 
 unzip "${VAULT_ZIP}"
@@ -56,12 +56,10 @@ sudo mv vault "$VAULT_DIR"
 sudo chmod 0755 "${VAULT_PATH}"
 sudo chown root:root "${VAULT_PATH}"
 
-
 echo "Version Installed: $(vault --version)"
 vault -autocomplete-install
 complete -C "${VAULT_PATH}" vault
 sudo setcap cap_ipc_lock=+ep "${VAULT_PATH}"
-
 
 echo "Creating Vault user and directories"
 sudo mkdir --parents "${VAULT_CONFIG_DIR}"
@@ -69,9 +67,8 @@ sudo useradd --system --home "${VAULT_CONFIG_DIR}" --shell /bin/false vault
 sudo mkdir --parents "${VAULT_DATA_DIR}"
 sudo chown --recursive vault:vault "${VAULT_DATA_DIR}"
 
-
 echo "Creating vault config for ${VAULT_VERSION}"
-sudo tee "${VAULT_CONFIG_DIR}/vault.hcl" > /dev/null <<VAULTCONFIG
+sudo tee "${VAULT_CONFIG_DIR}/vault.hcl" >/dev/null <<VAULTCONFIG
 ui = true
 api_addr = ""
 cluster_addr = ""
@@ -99,9 +96,8 @@ sudo sed -i "s|NODENAME|$NODE_NAME|g" "${VAULT_CONFIG_DIR}/vault.hcl"
 sudo chown --recursive vault:vault "${VAULT_CONFIG_DIR}"
 sudo chmod 640 "${VAULT_CONFIG_DIR}/vault.hcl"
 
-
 echo "Creating vault systemd service"
-sudo tee /etc/systemd/system/vault.service > /dev/null <<SYSDSERVICE
+sudo tee /etc/systemd/system/vault.service >/dev/null <<SYSDSERVICE
 [Unit]
 Description="HashiCorp Vault - A tool for managing secrets"
 Documentation=https://www.vaultproject.io/docs/
@@ -138,9 +134,11 @@ SYSDSERVICE
 
 sudo sed -i "s|VAULTBINDIR|$VAULT_DIR|g" /etc/systemd/system/vault.service
 
-echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >> ~/.bashrc
+echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >>~/.bashrc
 
 source ~/.bashrc
 
 echo "Enable Vault systemd service"
 sudo systemctl enable vault
+sudo systemctl start vault
+sudo systemctl status vault

@@ -62,7 +62,7 @@ vault write database/config/my-mysql-database \
     plugin_name=mysql-database-plugin \
     connection_url="{{username}}:{{password}}@tcp($(cat output.txt | jq -r '.rds_endpoint.value'))/" \
     allowed_roles="developer-role" \
-    username="dev" \
+    username="hcadmin" \
     password="migrateVault!"
 vault write database/roles/developer-role \
     db_name=my-mysql-database \
@@ -126,5 +126,7 @@ echo "TEST FAILING KV GET"
 tput setaf 3
 echo "==================="
 sleep 1
-vault kv get kv/app-speaker
+vault kv get kv/app-user
 sleep 2
+
+scp -i privateKey.pem vault_init.json ciphertext.txt lease_id.txt ubuntu@$(cat output.txt | jq -r '.vault_hsm_ip.value'):~
