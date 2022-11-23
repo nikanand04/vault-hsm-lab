@@ -14,6 +14,14 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+resource "tls_private_key" "vault" {
+  algorithm = "RSA"
+}
+
+locals {
+  private_key_filename = "${var.prefix}-ssh-key.pem"
+}
+
 resource "aws_key_pair" "vault" {
   key_name   = local.private_key_filename
   public_key = tls_private_key.vault.public_key_openssh

@@ -35,7 +35,7 @@ resource "aws_route_table" "vault" {
 
 resource "aws_db_subnet_group" "mysql" {
   name       = "${var.prefix}-db-subnet-group"
-  subnet_ids = [aws_subnet.vault-a.id, aws_subnet.vault-b.id]
+  subnet_ids = [aws_subnet.vault-a.id]
 
   tags = {
     Name = "${var.prefix}-db-subnet-group"
@@ -45,7 +45,7 @@ resource "aws_db_subnet_group" "mysql" {
 resource "aws_subnet" "vault-a" {
   vpc_id            = aws_vpc.vault.id
   cidr_block        = var.subnet_prefix_a
-  availability_zone = "us-west-2a"
+  availability_zone = "${var.region}a"
 
   tags = {
     name = "${var.prefix}-subnet-a"
