@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
 
+# Exit on error. Append "|| true" if you expect an error.
+set -o errexit
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
+set -o nounset
+# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
+set -o pipefail
+readonly __DEBUG="${MP_DEBUG:=0}"
+
+# Define field seperator for word spllitting
+# IFS=$' \n\t'
+
+# set debug output
+if [[ ${__DEBUG} = 1 || ${__DEBUG} = "TRUE" ]]; then
+    set -o xtrace #Turn on traces, useful while debugging but unset by default
+fi
+
 tput setaf 3
 echo "CONFIGURING KEY-VALUE SECRETS ENGINE"
 tput setaf 3
@@ -74,7 +92,7 @@ echo "GENERATE MYSQL DATABASE CREDENTIALS AND STORE LEASE ID"
 tput setaf 3
 echo "======================================================"
 sleep 1
-vault read database/creds/hashiconf-role -format=json | jq -r '.lease_id' >lease_id.txt
+vault read database/creds/developer-role -format=json | jq -r '.lease_id' >lease_id.txt
 sleep 1
 tput setaf 3
 echo "Lease ID = $(cat lease_id.txt)"
