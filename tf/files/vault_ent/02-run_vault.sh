@@ -19,6 +19,6 @@ if [[ ${__DEBUG} = 1 || ${__DEBUG} = "TRUE" ]]; then
 fi
 
 vault operator init -key-shares=1 -key-threshold=1 -format=json >~/vault_init.json
-vault operator unseal $(jq -r .unseal_keys_b64[0] <~/vault_init.json)
+vault operator unseal "$(jq -r .unseal_keys_b64[0] <~/vault_init.json)"
 sleep 10 # wait for priamry node to become active
-vault login $(jq -r .root_token <~/vault_init.json)
+vault login "$(jq -r .root_token <~/vault_init.json)"

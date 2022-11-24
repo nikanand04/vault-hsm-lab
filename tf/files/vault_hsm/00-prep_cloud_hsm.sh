@@ -35,6 +35,8 @@ HSM_IP=$(aws cloudhsmv2 describe-clusters \
   --query 'Clusters[].Hsms[] .EniIp' | jq -r .[])
 export HSM_IP
 
+# instruaction for ClouHSM-client install
+# ref. https://docs.aws.amazon.com/cloudhsm/latest/userguide/cmu-install-and-configure-client-linux.html
 wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/Bionic/cloudhsm-client_latest_u18.04_amd64.deb
 
 sudo apt install ./cloudhsm-client_latest_u18.04_amd64.deb -y
