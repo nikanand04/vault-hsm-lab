@@ -81,7 +81,7 @@ echo "GENERATE DYNAMIC MYSQL CREDENTIALS"
 tput setaf 190
 echo "=================================="
 sleep 2
-vault read database/creds/hashiconf-role
+vault read database/creds/developer-role
 sleep 1
 tput setaf 190
 echo "."
@@ -140,7 +140,7 @@ echo "TEST FAILING KV GET"
 tput setaf 190
 echo "==================="
 sleep 2
-vault kv get kv/app-speaker
+vault kv get kv/app-user
 sleep 1
 tput setaf 190
 echo "."

@@ -44,6 +44,21 @@ chmod +x *.sh
 ./save_output.sh
 ```
 
+## SSH to Vault Enterprise Basic Node
+```
+ssh -i privateKey.pem ubuntu@$(cat output.txt | jq -r '.vault_ent_ip.value')
+```
+
+## SSH to Vault HSM Node
+```
+ssh -i privateKey.pem ubuntu@$(cat output.txt | jq -r '.vault_hsm_ip.value')
+```
+
+## Enable Scripts
+```
+chmod +x *.sh
+```
+
 Setup Vault Enterprise with HSM
 =================================
 ## Navigate to the `HSM` tab.

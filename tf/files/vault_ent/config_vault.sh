@@ -108,7 +108,7 @@ path "kv/data/*" {
   capabilities = ["create", "update","read"]
 }
 
-path "kv/data/hashiconf-speaker" {
+path "kv/data/app-user" {
   capabilities = ["deny"]
 }
 EOF
