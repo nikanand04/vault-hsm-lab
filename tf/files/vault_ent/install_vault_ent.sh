@@ -115,7 +115,7 @@ sudo chown --recursive vault:vault "${VAULT_CONFIG_DIR}"
 sudo chmod 640 "${VAULT_CONFIG_DIR}/vault.hcl"
 
 echo "Creating vault systemd service"
-sudo tee /etc/systemd/system/vault.service >/dev/null <<SYSDSERVICE
+sudo tee /etc/systemd/system/vault.service >/dev/null <<'SYSDSERVICE'
 [Unit]
 Description="HashiCorp Vault - A tool for managing secrets"
 Documentation=https://www.vaultproject.io/docs/
@@ -136,7 +136,7 @@ Capabilities=CAP_IPC_LOCK+ep
 CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 NoNewPrivileges=yes
 ExecStart=VAULTBINDIR/vault server -config=/etc/vault.d/vault.hcl
-ExecReload=/bin/kill --signal HUP $MAINPID
+ExecReload=/bin/kill --signal HUP ${MAINPID}
 KillMode=process
 KillSignal=SIGINT
 Restart=on-failure
