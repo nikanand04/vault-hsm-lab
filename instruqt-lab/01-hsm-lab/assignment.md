@@ -59,6 +59,11 @@ ssh -i privateKey.pem ubuntu@$(cat output.txt | jq -r '.vault_hsm_ip.value')
 chmod +x *.sh
 ```
 
+## Cleanup Lab Environment
+```
+terraform apply -destroy -auto-approve
+```
+
 Setup Vault Enterprise with HSM
 =================================
 ## Navigate to the `HSM` tab.

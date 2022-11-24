@@ -65,7 +65,7 @@ wget)
   wget --no-check-certificate "${VAULT_URL}" --output-document="${VAULT_ZIP}"
   ;;
 curl)
-  [ 200 -ne $(curl --write-out %{http_code} --silent --output ${VAULT_ZIP} ${VAULT_URL}) ] && exit 1
+  [ 200 -ne "$(curl --write-out "%{http_code}" --silent --output ${VAULT_ZIP} ${VAULT_URL})" ] && exit 1
   ;;
 esac
 
@@ -154,7 +154,8 @@ sudo sed -i "s|VAULTBINDIR|$VAULT_DIR|g" /etc/systemd/system/vault.service
 
 echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >>~/.bashrc
 
-source ~/.bashrc
+# shellcheck source=/dev/null
+source "${HOME}"/.bashrc
 
 echo "Enable Vault systemd service"
 sudo systemctl enable vault
