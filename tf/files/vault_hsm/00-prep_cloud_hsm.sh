@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# sudo apt update -y
-# sudo apt install awscli jq -y
+sudo apt update -y
+sudo apt install awscli jq -y
 
 HSM_CLUSTER_ID="$(jq <output.txt -r .hsm_cluster_id.value)"
 export HSM_CLUSTER_ID
@@ -24,10 +24,22 @@ aws cloudhsmv2 initialize-cluster --cluster-id "${HSM_CLUSTER_ID}" \
   --trust-anchor file://customerCA.crt
 
 # Check periodically until it shows INITIALIZED
-aws cloudhsmv2 describe-clusters \
-  --filters clusterIds="${HSM_CLUSTER_ID}" \
-  --output text \
-  --query 'Clusters[].State'
+# aws cloudhsmv2 describe-clusters \
+#   --filters clusterIds="${HSM_CLUSTER_ID}" \
+#   --output text \
+#   --query 'Clusters[].State'
+
+CLUSTER_INIT="NOT INITIALIZED"
+spin='⣾⣽⣻⢿⡿⣟⣯⣷'
+charwidth=3
+i=0
+
+while [ ! "${CLUSTER_INIT}" = "INITIALIZED" ]; do
+  CLUSTER_INIT="$(aws cloudhsmv2 describe-clusters --filters clusterIds="${HSM_CLUSTER_ID}" | jq -r '.Clusters[] | .State')"
+  i=$(((i + charwidth) % ${#spin}))
+  printf "%s" "${spin:$i:$charwidth}"
+done
+#  aws cloudhsmv2 describe-clusters --filters clusterIds="${HSM_CLUSTER_ID}" | jq -r '.Clusters[] | .State'
 
 #Finds the IP address of the CloudHSM
 HSM_IP=$(aws cloudhsmv2 describe-clusters \
@@ -38,7 +50,6 @@ export HSM_IP
 # instruaction for ClouHSM-client install
 # ref. https://docs.aws.amazon.com/cloudhsm/latest/userguide/cmu-install-and-configure-client-linux.html
 wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/Bionic/cloudhsm-client_latest_u18.04_amd64.deb
-
 sudo apt install ./cloudhsm-client_latest_u18.04_amd64.deb -y
 
 sudo /opt/cloudhsm/bin/configure -a "${HSM_IP}"
