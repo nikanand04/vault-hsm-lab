@@ -30,14 +30,15 @@ aws cloudhsmv2 initialize-cluster --cluster-id "${HSM_CLUSTER_ID}" \
 #   --query 'Clusters[].State'
 
 CLUSTER_INIT="NOT INITIALIZED"
-spin='⣾⣽⣻⢿⡿⣟⣯⣷'
-charwidth=3
-i=0
+# spin='⣾⣿⣽⣿⣻⣿⢿⣿⡿⣿⣿⢿⣿⡿⣿⣟⣿⣯⣿⣷⣿⣾⣷⣿'
+spinner='🌕 🌖 🌗 🌘 🌑 🌒 🌓 🌔 🌕'
+spinlen=${#spinner}
+char=0
 
 while [ ! "${CLUSTER_INIT}" = "INITIALIZED" ]; do
   CLUSTER_INIT="$(aws cloudhsmv2 describe-clusters --filters clusterIds="${HSM_CLUSTER_ID}" | jq -r '.Clusters[] | .State')"
-  i=$(((i + charwidth) % ${#spin}))
-  printf "%s" "${spin:$i:$charwidth}"
+  char=$(((char + 1) % spinlen))
+  printf "%s" "${spinner:$char:1}"
 done
 #  aws cloudhsmv2 describe-clusters --filters clusterIds="${HSM_CLUSTER_ID}" | jq -r '.Clusters[] | .State'
 
@@ -56,19 +57,21 @@ sudo /opt/cloudhsm/bin/configure -a "${HSM_IP}"
 
 sudo mv customerCA.crt /opt/cloudhsm/etc/customerCA.crt
 
-/opt/cloudhsm/bin/cloudhsm_mgmt_util /opt/cloudhsm/etc/cloudhsm_mgmt_util.cfg
+### requires interaction
+# /opt/cloudhsm/bin/cloudhsm_mgmt_util /opt/cloudhsm/etc/cloudhsm_mgmt_util.cfg
 
-loginHSM PRECO admin password
+# loginHSM PRECO admin password
 
-changePswd PRECO admin hashivault
+# changePswd PRECO admin hashivault
 
-logoutHSM
+# logoutHSM
 
-loginHSM CO admin hashivault
+# loginHSM CO admin hashivault
 
-createUser CU vault Password1
+# createUser CU vault Password1
 
-quit
+# quit
+### end interaction
 
 # Install PKCS #11 Library
 sudo service cloudhsm-client start
