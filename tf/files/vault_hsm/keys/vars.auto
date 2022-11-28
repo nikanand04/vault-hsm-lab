@@ -1,0 +1,20 @@
+# Choices are:
+#   cn_only  - use just a CN value
+#   org      - use the "traditional" Country/Province/City/Org/OU/email/CN format
+
+set_var EASYRSA_DN      "org"
+
+# Organizational fields (used with 'org' mode and ignored in 'cn_only' mode.)
+# These are the default values for fields which will be placed in the
+# certificate.  Don't leave any of these fields blank, although interactively
+# you may omit any specific field by typing the "." symbol (not valid for
+# email.)
+
+set_var EASYRSA_REQ_COUNTRY     "US"
+set_var EASYRSA_REQ_PROVINCE    "CA"
+set_var EASYRSA_REQ_CITY        "IRVINE"
+set_var EASYRSA_REQ_ORG         "ACME"
+set_var EASYRSA_REQ_EMAIL       "hashi@vault.local"
+set_var EASYRSA_REQ_OU          "WEB"
+
+set_var EASYRSA_BATCH           "1"
