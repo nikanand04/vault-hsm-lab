@@ -1,0 +1,37 @@
+#!/bin/bash -l
+# This is the setup script for the workstation container. Use it to set the stage for your terraform training, demo, or lab.
+set -e
+
+# Wait for Instruqt to finish booting the VM
+# This is better than doing sleep
+# while [ ! -f /opt/instruqt/bootstrap/host-bootstrap-completed ]; do
+# 	echo "Waiting for Instruqt to finish booting the VM"
+# 	sleep 1
+# done
+
+# # Set Terraform Version
+# TERRAFORM_VERSION="1.1.5"
+
+# # Install desired version of Terraform
+# wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+# unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+# mv terraform /usr/local/bin/terraform
+# chmod +x /usr/local/bin/terraform
+# rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+# # Install software
+# sudo apt update -y
+
+# # Clone repo
+# git clone --depth=1 https://github.com/joshua-bradley/vault-hsm-lab.git
+
+# Set the user's working directory
+set-workdir /root/vault-hsm-lab/tf
+
+# Avoid SSH prompt
+# sudo sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
+
+chmod +x *.sh
+${PWD}/save_output.sh
+
+exit 0

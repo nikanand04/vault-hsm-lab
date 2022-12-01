@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 sudo apt update -y
-sudo apt install awscli jq -y
+sudo apt install awscli jq unzip -y
 
 HSM_CLUSTER_ID="$(jq <output.txt -r .hsm_cluster_id.value)"
 export HSM_CLUSTER_ID
@@ -17,6 +17,7 @@ aws cloudhsmv2 describe-clusters --filters clusterIds="${HSM_CLUSTER_ID}" \
   --output text --query 'Clusters[].Certificates.ClusterCsr' >${PWD}/keys/ClusterCsr.csr
 
 cd ${PWD}/keys
+./easyrsa init-pki
 cp vars.auto pki/vars
 ./easyrsa build-ca nopass
 
@@ -27,7 +28,7 @@ openssl x509 -req -days 3652 -in ClusterCsr.csr \
 # initialize cloudhsm with signed cert
 aws cloudhsmv2 initialize-cluster --cluster-id "${HSM_CLUSTER_ID}" \
   --signed-cert file://CustomerHsmCertificate.crt \
-  --trust-anchor file://pki/customerCA.crt
+  --trust-anchor file://pki/ca.crt
 
 # Check periodically until it shows INITIALIZED
 CLUSTER_INIT="NOT INITIALIZED"
@@ -56,7 +57,8 @@ sudo apt install ./cloudhsm-client_latest_u18.04_amd64.deb -y
 
 sudo /opt/cloudhsm/bin/configure -a "${HSM_IP}"
 
-sudo mv customerCA.crt /opt/cloudhsm/etc/customerCA.crt
+sudo cp pki/ca.crt /opt/cloudhsm/etc/customerCA.crt
+sudo chmod 644 /opt/cloudhsm/etc/customerCA.crt
 
 ### requires interaction
 # /opt/cloudhsm/bin/cloudhsm_mgmt_util /opt/cloudhsm/etc/cloudhsm_mgmt_util.cfg
@@ -70,18 +72,15 @@ sudo mv customerCA.crt /opt/cloudhsm/etc/customerCA.crt
 
 ### non-interactive method
 wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/Bionic/cloudhsm-cli_latest_u18.04_amd64.deb
+sudo apt install ./cloudhsm-cli_latest_u18.04_amd64.deb -y
 sudo /opt/cloudhsm/bin/configure-cli -a "${HSM_IP}"
-export CLOUDHSM_ROLE=admin
-export CLOUDHSM_PIN=admin:hashivault
-cloudhsm-cli cluster activate [OPTIONS] [--password <PASSWORD >]
-# change-password may be optional
-# cloudhsm-cli user change-password [OPTIONS] --username <USERNAME> --role <ROLE> [--password <PASSWORD>]
-/opt/cloudhsm/bin/cloudhsm-cli user create [OPTIONS] --username <USERNAME >--role <ROLE >[--password <PASSWORD >]
-/opt/cloudhsm/bin/cloudhsm-cli user list
+CLOUDHSM_ROLE=admin
+CLOUDHSM_PIN=admin:hashivault
+sudo CLOUDHSM_ROLE=${CLOUDHSM_ROLE} CLOUDHSM_PIN=${CLOUDHSM_PIN} /opt/cloudhsm/bin/cloudhsm-cli cluster activate --password hashivault
+sudo CLOUDHSM_ROLE=${CLOUDHSM_ROLE} CLOUDHSM_PIN=${CLOUDHSM_PIN} /opt/cloudhsm/bin/cloudhsm-cli user create --username vault --role crypto-user --password Password1
+sudo CLOUDHSM_ROLE=${CLOUDHSM_ROLE} CLOUDHSM_PIN=${CLOUDHSM_PIN} /opt/cloudhsm/bin/cloudhsm-cli user list | jq -r '.data.users[] | .username'
 
 # Install PKCS #11 Library
-sudo service cloudhsm-client start
-
 wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/Bionic/cloudhsm-client-pkcs11_latest_u18.04_amd64.deb
-
 sudo apt install ./cloudhsm-client-pkcs11_latest_u18.04_amd64.deb -y
+sudo service cloudhsm-client start
