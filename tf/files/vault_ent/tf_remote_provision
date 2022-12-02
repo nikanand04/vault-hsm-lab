@@ -19,6 +19,9 @@ if [[ ${__DEBUG} = 1 || ${__DEBUG} = "TRUE" ]]; then
 fi
 
 chmod +x "${HOME}"/*.sh
+echo "installing vault"
 "${HOME}"/01-install_vault_ent.sh
+sleep 10
+echo "initializing vault"
 "${HOME}"/02-run_vault.sh
-"${HOME}"/03-config_vault.sh
+# "${HOME}"/03-config_vault.sh
