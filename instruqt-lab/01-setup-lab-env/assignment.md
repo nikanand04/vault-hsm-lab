@@ -1,6 +1,6 @@
 ---
 slug: setup-lab-env
-id: pcgmqqwwuys2
+id: h60ytzxh5fyi
 type: challenge
 title: "\U0001F3E1 HowTo: Vault w/ Setup AWS Cloud HSM"
 teaser: |
