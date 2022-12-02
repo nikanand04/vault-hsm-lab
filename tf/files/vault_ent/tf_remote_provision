@@ -15,13 +15,10 @@ readonly __DEBUG="${MP_DEBUG:=0}"
 
 # set debug output
 if [[ ${__DEBUG} = 1 || ${__DEBUG} = "TRUE" ]]; then
-	set -o xtrace #Turn on traces, useful while debugging but unset by default
+  set -o xtrace #Turn on traces, useful while debugging but unset by default
 fi
 
-# constants and environment
-declare -xr VAULT_ADDR="http://127.0.0.1:8200"
-
-vault operator init -key-shares=1 -key-threshold=1 -format=json >~/vault_init.json
-vault operator unseal "$(jq -r .unseal_keys_b64[0] <~/vault_init.json)"
-sleep 10 # wait for priamry node to become active
-vault login "$(jq -r .root_token <~/vault_init.json)"
+chmod +x "${HOME}"/*.sh
+"${HOME}"/01-install_vault.sh
+"${HOME}"/02-run_vault.sh
+"${HOME}"/03-config_vault.sh

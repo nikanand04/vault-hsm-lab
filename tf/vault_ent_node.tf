@@ -44,10 +44,8 @@ resource "null_resource" "configure-vault-ent" {
   provisioner "remote-exec" {
     inline = [
       "sudo sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config",
-      "chmod +x *.sh",
-      ""${HOME}"/01-install_vault_ent.sh",
-      ""${HOME}"/02-run_vault.sh",
-      ""${HOME}"/03-config_vault.sh",
+      "chmod +x tf_remote_provision",
+      "./tf_remote_provision",
     ]
 
     connection {

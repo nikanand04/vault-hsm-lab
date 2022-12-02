@@ -18,6 +18,9 @@ if [[ ${__DEBUG} = 1 || ${__DEBUG} = "TRUE" ]]; then
     set -o xtrace #Turn on traces, useful while debugging but unset by default
 fi
 
+# constants and environment
+declare -xr VAULT_ADDR="http://127.0.0.1:8200"
+
 tput setaf 3
 echo "CONFIGURING KEY-VALUE SECRETS ENGINE"
 tput setaf 3

@@ -24,8 +24,6 @@ sudo apt install unzip jq -y
 
 echo "Installing Vault Enterprise"
 # Setup vault enterprise as server
-set -e
-
 # USER VARS
 VAULT_VERSION="1.9.3"
 NODE_NAME="${1:-$(hostname -s)}"
@@ -155,7 +153,7 @@ sudo sed -i "s|VAULTBINDIR|$VAULT_DIR|g" /etc/systemd/system/vault.service
 echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >>~/.bashrc
 
 # shellcheck source=/dev/null
-source "${HOME}"/.bashrc
+# source "${HOME}"/.bashrc
 
 echo "Enable Vault systemd service"
 sudo systemctl enable vault
