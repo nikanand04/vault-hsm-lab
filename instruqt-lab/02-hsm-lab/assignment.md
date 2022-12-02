@@ -1,6 +1,6 @@
 ---
 slug: hsm-lab
-id: pcgmqqwwuys2
+id: rcf5dwtckurx
 type: challenge
 title: "\U0001F3E1 HowTo: Vault w/ Setup AWS Cloud HSM"
 teaser: |
@@ -29,20 +29,8 @@ difficulty: basic
 timelimit: 28800
 ---
 
-Provision Infrastructure
+Manage Infrastructure
 ========================
-
-## Provision Infrastructure
-```
-terraform init
-terraform apply -auto-approve
-```
-
-## Save Output
-```
-chmod +x *.sh
-./save_output.sh
-```
 
 ## SSH to Vault Enterprise Basic Node
 ```
