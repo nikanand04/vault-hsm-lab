@@ -21,7 +21,7 @@ fi
 chmod +x "${HOME}"/*.sh
 echo "installing vault"
 "${HOME}"/01-install_vault_ent.sh
-sleep 10
+read -p it 30 "Press any key to resume ..."
 echo "initializing vault"
 "${HOME}"/02-run_vault.sh
 # "${HOME}"/03-config_vault.sh

@@ -158,4 +158,4 @@ echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >>~/.bashrc
 echo "Enable Vault systemd service"
 sudo systemctl enable vault
 sudo systemctl start vault
-sudo systemctl status vault
+sudo systemctl show vault --no-page
