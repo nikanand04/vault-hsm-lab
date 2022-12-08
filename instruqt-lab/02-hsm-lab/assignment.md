@@ -26,7 +26,7 @@ tabs:
   path: /
   port: 80
 difficulty: basic
-timelimit: 28800
+timelimit: 14400
 ---
 
 Manage Infrastructure

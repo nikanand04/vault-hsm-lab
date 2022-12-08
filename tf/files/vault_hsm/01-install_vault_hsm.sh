@@ -9,7 +9,7 @@ set -e
 
 # USER VARS
 NODE_NAME="${1:-$(hostname -s)}"
-VAULT_VERSION="1.9.3"
+VAULT_VERSION="1.11.6"
 VAULT_DIR=/usr/local/bin
 VAULT_CONFIG_DIR=/etc/vault.d
 VAULT_DATA_DIR=/opt/vault

@@ -18,10 +18,22 @@ if [[ ${__DEBUG} = 1 || ${__DEBUG} = "TRUE" ]]; then
   set -o xtrace #Turn on traces, useful while debugging but unset by default
 fi
 
+# constants and environment
+declare -xr VAULT_ADDR="http://127.0.0.1:8200"
+
+# local functions
+
+### simple error trap
+err() {
+  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
+}
+
 chmod +x "${HOME}"/*.sh
 echo "installing vault"
 "${HOME}"/01-install_vault_ent.sh
-read -p it 30 "Press any key to resume ..."
+read -r -t 30 -p "Press any key to resume ..."
+curl -s http://${VAULT_ADDR}/v1/sys/seal-status | jq '.initialized'
+# false
 echo "initializing vault"
 "${HOME}"/02-run_vault.sh
 # "${HOME}"/03-config_vault.sh

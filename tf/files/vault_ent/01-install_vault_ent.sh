@@ -18,76 +18,84 @@ if [[ ${__DEBUG} = 1 || ${__DEBUG} = "TRUE" ]]; then
   set -o xtrace #Turn on traces, useful while debugging but unset by default
 fi
 
-# echo "Running updates and installing unzip, jq"
-sudo apt update -y
-sudo apt install unzip jq -y
+# constants and environment
+declare -xr VAULT_ADDR="http://127.0.0.1:8200"
+readonly VAULT_VERSION="1.11.6"
+readonly NODE_NAME="${1:-$(hostname -s)}"
+readonly VAULT_DIR="/usr/local/bin"
+readonly VAULT_CONFIG_DIR="/etc/vault.d"
+readonly VAULT_DATA_DIR="/opt/vault"
+readonly VAULT_PATH=${VAULT_DIR}/vault
+readonly VAULT_ZIP="vault_${VAULT_VERSION}+ent_linux_amd64.zip"
+readonly VAULT_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}+ent/${VAULT_ZIP}"
 
-echo "Installing Vault Enterprise"
-# Setup vault enterprise as server
-# USER VARS
-VAULT_VERSION="1.9.3"
-NODE_NAME="${1:-$(hostname -s)}"
-VAULT_DIR=/usr/local/bin
-VAULT_CONFIG_DIR=/etc/vault.d
-VAULT_DATA_DIR=/opt/vault
+# local functions
 
-# CALCULATED VARS
-VAULT_PATH=${VAULT_DIR}/vault
-VAULT_ZIP="vault_${VAULT_VERSION}+ent_linux_amd64.zip"
-VAULT_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}+ent/${VAULT_ZIP}"
+### simple error trap
+err() {
+  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
+}
 
-# CHECK DEPENDANCIES AND SET NET RETRIEVAL TOOL
-if ! unzip -h 2 &>/dev/null; then
-  echo "aborting - unzip not installed and required"
-  exit 1
-fi
-if curl -h 2 &>/dev/null; then
-  nettool="curl"
-elif wget -h 2 &>/dev/null; then
-  nettool="wget"
-else
-  echo "aborting - neither wget nor curl installed and required"
-  exit 1
-fi
+### installation of required support packages
+prereq_prep() {
+  echo "Running updates and installing unzip, jq"
+  sudo apt update -y
+  sudo apt install unzip jq -y
+}
 
-set +e
+install_vault() {
+  # local vairables
+  pri_ip=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 
-# try to get private IP
-pri_ip=$(hostname -I 2>/dev/null | awk '{print $1}')
-set -e
+  echo "Installing Vault Enterprise"
+  # Setup vault enterprise as server
+  # CHECK DEPENDANCIES AND SET NET RETRIEVAL TOOL
+  if ! unzip -h 2 &>/dev/null; then
+    echo "aborting - unzip not installed and required"
+    exit 1
+  fi
+  if curl -h 2 &>/dev/null; then
+    nettool="curl"
+  elif wget -h 2 &>/dev/null; then
+    nettool="wget"
+  else
+    echo "aborting - neither wget nor curl installed and required"
+    exit 1
+  fi
 
-# download and extract binary
-echo "Downloading and installing vault ${VAULT_VERSION}"
-case "${nettool}" in
-wget)
-  wget --no-check-certificate "${VAULT_URL}" --output-document="${VAULT_ZIP}"
-  ;;
-curl)
-  [ 200 -ne "$(curl --write-out "%{http_code}" --silent --output ${VAULT_ZIP} ${VAULT_URL})" ] && exit 1
-  ;;
-esac
+  # download and extract binary
+  echo "Downloading and installing vault ${VAULT_VERSION}"
+  # case "${nettool}" in
+  # wget)
+  #   wget --no-check-certificate "${VAULT_URL}" --output-document="${VAULT_ZIP}"
+  #   ;;
+  # curl)
+  #   [ 200 -ne "$(curl --write-out "%{http_code}" --silent --output ${VAULT_ZIP} ${VAULT_URL})" ] && exit 1
+  #   ;;
+  # esac
 
-unzip "${VAULT_ZIP}"
-sudo mv vault "$VAULT_DIR"
-sudo chmod 0755 "${VAULT_PATH}"
-sudo chown root:root "${VAULT_PATH}"
+  curl --write-out "%{http_code}" --silent --output ${VAULT_ZIP} ${VAULT_URL}
 
-echo "Version Installed: $(vault --version)"
-vault -autocomplete-install
-complete -C "${VAULT_PATH}" vault
-sudo setcap cap_ipc_lock=+ep "${VAULT_PATH}"
+  unzip "${VAULT_ZIP}"
+  sudo mv vault "${VAULT_PATH}"
+  sudo chmod 0755 "${VAULT_PATH}"
+  sudo chown root:root "${VAULT_PATH}"
 
-echo "Creating Vault user and directories"
-sudo mkdir --parents "${VAULT_CONFIG_DIR}"
-sudo useradd --system --home "${VAULT_CONFIG_DIR}" --shell /bin/false vault
-sudo mkdir --parents "${VAULT_DATA_DIR}"
-sudo chown --recursive vault:vault "${VAULT_DATA_DIR}"
+  # echo "Version Installed: $(vault --version)"
+  vault -autocomplete-install
+  sudo setcap cap_ipc_lock=+ep "${VAULT_PATH}"
 
-echo "Creating vault config for ${VAULT_VERSION}"
-sudo tee "${VAULT_CONFIG_DIR}/vault.hcl" >/dev/null <<VAULTCONFIG
+  echo "Creating Vault user and directories"
+  sudo mkdir --parents "${VAULT_CONFIG_DIR}"
+  sudo useradd --system --home "${VAULT_CONFIG_DIR}" --shell /bin/false vault
+  sudo mkdir --parents "${VAULT_DATA_DIR}"
+  sudo chown --recursive vault:vault "${VAULT_DATA_DIR}"
+
+  echo "Creating vault config for ${VAULT_VERSION}"
+  sudo cat "${VAULT_CONFIG_DIR}/vault.hcl" &>/dev/null <<VAULTCFG
 ui = true
-api_addr = ""
-cluster_addr = ""
+api_addr = "http://$pri_ip:8200"
+cluster_addr = "https://$pri_ip:8201"
 cluster_name="vault-enterprise"
 
 listener "tcp" {
@@ -103,17 +111,17 @@ storage "raft" {
 
 # Enterprise License Auto-Load
 license_path = "/home/ubuntu/vault.hclic"
-VAULTCONFIG
+VAULTCFG
 
-sudo sed -i "s|NODENAME|$NODE_NAME|g" "${VAULT_CONFIG_DIR}/vault.hcl"
-[[ "$pri_ip" ]] && sudo sed -i "s|^api_addr.*|api_addr = \"http://$pri_ip:8200\"|g" "${VAULT_CONFIG_DIR}/vault.hcl"
-[[ "$pri_ip" ]] && sudo sed -i "s|^cluster_addr.*|cluster_addr = \"https://$pri_ip:8201\"|g" "${VAULT_CONFIG_DIR}/vault.hcl"
-[[ "$pri_ip" ]] && sudo sed -i "s|^#\ \ cluster_address.*|\ \ cluster_address  = \"$pri_ip:8201\"|g" "${VAULT_CONFIG_DIR}/vault.hcl"
-sudo chown --recursive vault:vault "${VAULT_CONFIG_DIR}"
-sudo chmod 640 "${VAULT_CONFIG_DIR}/vault.hcl"
+  # sudo sed -i "s|NODENAME|$NODE_NAME|g" "${VAULT_CONFIG_DIR}/vault.hcl"
+  # [[ "$pri_ip" ]] && sudo sed -i "s|^api_addr.*|api_addr = \"http://$pri_ip:8200\"|g" "${VAULT_CONFIG_DIR}/vault.hcl"
+  # [[ "$pri_ip" ]] && sudo sed -i "s|^cluster_addr.*|cluster_addr = \"https://$pri_ip:8201\"|g" "${VAULT_CONFIG_DIR}/vault.hcl"
+  # [[ "$pri_ip" ]] && sudo sed -i "s|^#\ \ cluster_address.*|\ \ cluster_address  = \"$pri_ip:8201\"|g" "${VAULT_CONFIG_DIR}/vault.hcl"
+  sudo chown --recursive vault:vault "${VAULT_CONFIG_DIR}"
+  sudo chmod 640 "${VAULT_CONFIG_DIR}/vault.hcl"
 
-echo "Creating vault systemd service"
-sudo tee /etc/systemd/system/vault.service >/dev/null <<'SYSDSERVICE'
+  echo "Creating vault systemd service"
+  sudo cat /etc/systemd/system/vault.service &>/dev/null <<SVCCFG
 [Unit]
 Description="HashiCorp Vault - A tool for managing secrets"
 Documentation=https://www.vaultproject.io/docs/
@@ -133,7 +141,7 @@ AmbientCapabilities=CAP_IPC_LOCK
 Capabilities=CAP_IPC_LOCK+ep
 CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 NoNewPrivileges=yes
-ExecStart=VAULTBINDIR/vault server -config=/etc/vault.d/vault.hcl
+ExecStart=${VAULT_PATH} server -config=/etc/vault.d/vault.hcl
 ExecReload=/bin/kill --signal HUP ${MAINPID}
 KillMode=process
 KillSignal=SIGINT
@@ -146,16 +154,31 @@ LimitNOFILE=65536
 
 [Install]
 WantedBy=multi-user.target
-SYSDSERVICE
+SVCCFG
 
-sudo sed -i "s|VAULTBINDIR|$VAULT_DIR|g" /etc/systemd/system/vault.service
-
-echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >>~/.bashrc
+  echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >>~/.bashrc
+}
 
 # shellcheck source=/dev/null
 # source "${HOME}"/.bashrc
 
-echo "Enable Vault systemd service"
-sudo systemctl enable vault
-sudo systemctl start vault
-sudo systemctl show vault --no-page
+activate_vault() {
+  echo "Enable Vault systemd service"
+  sudo systemctl enable vault
+  sudo systemctl start vault
+
+  is_active="not active"
+
+  until [[ "${is_active}" == "active" ]]; do
+    is_active="$(sudo systemctl is-active vault)"
+    sleep 5
+  done
+}
+
+main() {
+  prereq_prep
+  install_vault
+  activate_vault
+}
+
+main "$@"
