@@ -21,7 +21,6 @@ fi
 # constants and environment
 declare -xr VAULT_ADDR="http://127.0.0.1:8200"
 readonly VAULT_VERSION="1.11.6"
-readonly NODE_NAME="${1:-$(hostname -s)}"
 readonly VAULT_DIR="/usr/local/bin"
 readonly VAULT_CONFIG_DIR="/etc/vault.d"
 readonly VAULT_DATA_DIR="/opt/vault"
@@ -56,10 +55,10 @@ install_vault() {
   fi
   if curl -h 2 &>/dev/null; then
     nettool="curl"
-  elif wget -h 2 &>/dev/null; then
-    nettool="wget"
+  # elif wget -h 2 &>/dev/null; then
+  #   nettool="wget"
   else
-    echo "aborting - neither wget nor curl installed and required"
+    echo "aborting - curl is not installed and required"
     exit 1
   fi
 
@@ -92,7 +91,7 @@ install_vault() {
   sudo chown --recursive vault:vault "${VAULT_DATA_DIR}"
 
   echo "Creating vault config for ${VAULT_VERSION}"
-  sudo cat "${VAULT_CONFIG_DIR}/vault.hcl" &>/dev/null <<VAULTCFG
+  sudo tee "${VAULT_CONFIG_DIR}/vault.hcl" &>/dev/null <<VAULTCFG
 ui = true
 api_addr = "http://$pri_ip:8200"
 cluster_addr = "https://$pri_ip:8201"
@@ -121,7 +120,7 @@ VAULTCFG
   sudo chmod 640 "${VAULT_CONFIG_DIR}/vault.hcl"
 
   echo "Creating vault systemd service"
-  sudo cat /etc/systemd/system/vault.service &>/dev/null <<SVCCFG
+  sudo tee /etc/systemd/system/vault.service &>/dev/null <<'SVCCFG'
 [Unit]
 Description="HashiCorp Vault - A tool for managing secrets"
 Documentation=https://www.vaultproject.io/docs/
@@ -141,7 +140,7 @@ AmbientCapabilities=CAP_IPC_LOCK
 Capabilities=CAP_IPC_LOCK+ep
 CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 NoNewPrivileges=yes
-ExecStart=${VAULT_PATH} server -config=/etc/vault.d/vault.hcl
+ExecStart=VAULT_PATH server -config=/etc/vault.d/vault.hcl
 ExecReload=/bin/kill --signal HUP ${MAINPID}
 KillMode=process
 KillSignal=SIGINT
@@ -155,6 +154,8 @@ LimitNOFILE=65536
 [Install]
 WantedBy=multi-user.target
 SVCCFG
+
+  sudo sed -i "s|VAULT_PATH|${VAULT_PATH}|g" /etc/systemd/system/vault.service
 
   echo 'export VAULT_ADDR="http://127.0.0.1:8200"' >>~/.bashrc
 }
