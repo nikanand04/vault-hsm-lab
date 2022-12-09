@@ -21,7 +21,7 @@ fi
 # constants and environment
 declare -xr VAULT_ADDR="http://127.0.0.1:8200"
 
-vault login $(jq -r .root_token <~/vault_init.json)
+vault login "$(jq -r .root_token <~/vault_init.json)"
 sleep 2
 
 tput setaf 190
