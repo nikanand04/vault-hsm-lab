@@ -31,9 +31,9 @@ err() {
 chmod +x "${HOME}"/*.sh
 echo "installing vault"
 "${HOME}"/01-install_vault_ent.sh
-read -r -t 30 -p "Press any key to resume ..."
-curl -s http://${VAULT_ADDR}/v1/sys/seal-status | jq '.initialized'
+# read -r -t 30 -p "Press any key to resume ..."
+curl -s ${VAULT_ADDR}/v1/sys/seal-status | jq '.initialized'
 # false
 echo "initializing vault"
 "${HOME}"/02-run_vault.sh
-# "${HOME}"/03-config_vault.sh
+"${HOME}"/03-config_vault.sh
