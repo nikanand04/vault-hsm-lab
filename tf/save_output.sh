@@ -26,7 +26,7 @@ readonly __XFR_FILES=(output.txt)
 
 terraform output -json >output.txt
 
-for i in "${__XFR_FILES[@]}"; do
-	scp -i privateKey.pem ${i} ubuntu@$(cat output.txt | jq -r '.vault_ent_ip.value'):~
-	scp -i privateKey.pem ${i} ubuntu@$(cat output.txt | jq -r '.vault_hsm_ip.value'):~
-done
+# for i in "${__XFR_FILES[@]}"; do
+# 	scp -i privateKey.pem ${i} ubuntu@$(cat output.txt | jq -r '.vault_ent_ip.value'):~
+# 	scp -i privateKey.pem ${i} ubuntu@$(cat output.txt | jq -r '.vault_hsm_ip.value'):~
+# done
