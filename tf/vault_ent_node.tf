@@ -21,38 +21,3 @@ resource "aws_instance" "vault-ent" {
     Name = "${var.prefix}-vault-ent-instance"
   }
 }
-
-resource "null_resource" "configure-vault-ent" {
-  depends_on = [aws_eip_association.vault-ent]
-
-  # triggers = {
-  #   build_number = timestamp()
-  # }
-
-  provisioner "file" {
-    source      = "./files/vault_ent/"
-    destination = "/home/ubuntu/"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-ent.public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config",
-      "chmod +x tf_remote_provision",
-      # "./tf_remote_provision",
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-ent.public_ip
-    }
-  }
-}

@@ -21,10 +21,10 @@ fi
 # constants and environment
 declare -xr VAULT_ADDR="http://127.0.0.1:8200"
 readonly VAULT_VERSION="1.11.6"
-readonly VAULT_DIR="/usr/local/bin"
+# readonly VAULT_DIR="/usr/local/bin"
 readonly VAULT_CONFIG_DIR="/etc/vault.d"
 readonly VAULT_DATA_DIR="/opt/vault"
-readonly VAULT_PATH=${VAULT_DIR}/vault
+readonly VAULT_PATH="/usr/local/bin/vault"
 readonly VAULT_ZIP="vault_${VAULT_VERSION}+ent_linux_amd64.zip"
 readonly VAULT_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}+ent/${VAULT_ZIP}"
 

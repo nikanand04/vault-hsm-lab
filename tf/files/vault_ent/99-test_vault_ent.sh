@@ -161,7 +161,7 @@ echo "TEST FAILING KV GET"
 tput setaf 190
 echo "==================="
 sleep 2
-vault kv get kv/app-user
+vault kv get kv/app-user || true
 sleep 1
 tput setaf 190
 echo "."
