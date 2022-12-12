@@ -9,13 +9,13 @@ resource "null_resource" "configure-vault-ent" {
   # }
 
   provisioner "file" {
-    source = templatefile("./files/templates/output.tftpl", {
-      hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
-      rds_endpoint   = aws_db_instance.vault.endpoint,
-      vault_ent_ip   = aws_instance.vault-ent.public_ip,
-      vault_hsm_ip   = aws_instance.vault-hsm.public_ip
+    content = templatefile("./files/templates/output.tftpl",
+      { hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
+        rds_endpoint   = aws_db_instance.vault.endpoint,
+        vault_ent_ip   = aws_instance.vault-ent.public_ip,
+        vault_hsm_ip   = aws_instance.vault-hsm.public_ip
     })
-    destination = "/home/ubuntu/"
+    destination = "/home/ubuntu/output.txt"
 
     connection {
       type        = "ssh"
@@ -62,13 +62,13 @@ resource "null_resource" "configure-vault-hsm" {
   # }
 
   provisioner "file" {
-    source = templatefile("./files/templates/output.tftpl", {
-      hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
-      rds_endpoint   = aws_db_instance.vault.endpoint,
-      vault_ent_ip   = aws_instance.vault-ent.public_ip,
-      vault_hsm_ip   = aws_instance.vault-hsm.public_ip
+    content = templatefile("./files/templates/output.tftpl",
+      { hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
+        rds_endpoint   = aws_db_instance.vault.endpoint,
+        vault_ent_ip   = aws_instance.vault-ent.public_ip,
+        vault_hsm_ip   = aws_instance.vault-hsm.public_ip
     })
-    destination = "/home/ubuntu/"
+    destination = "/home/ubuntu/output.txt"
 
     connection {
       type        = "ssh"

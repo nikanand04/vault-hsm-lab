@@ -1,14 +1,15 @@
 ${
- jsonencode("hsm_cluster_id": {
-    "value": ${hsm_cluster_id}
+ jsonencode({
+  "hsm_cluster_id": {
+    "value": "${hsm_cluster_id}"
   },
   "rds_endpoint": {
-    "value": ${rds_endpoint}
+    "value": "${rds_endpoint}"
   },
   "vault_ent_ip": {
-    "value": ${vault_ent_ip}
+    "value": "${vault_ent_ip}"
   },
   "vault_hsm_ip": {
-    "value": ${vault_hsm_ip}
-  })
-}
+    "value": "${vault_hsm_ip}"
+  }
+})}
