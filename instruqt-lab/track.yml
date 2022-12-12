@@ -13,6 +13,5 @@ tags:
 owner: hashicorp
 developers:
 - jbradley@hashicorp.com
-private: true
-published: false
-checksum: "16809339516813101854"
+checksum: "7241375468349871502"
+timelimit: 14400
