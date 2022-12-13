@@ -150,4 +150,5 @@ sleep 1
 vault kv get kv/app-user || true
 sleep 2
 
+chmod 400 ./privateKey.pem
 scp -i privateKey.pem vault_init.json ciphertext.txt lease_id.txt ubuntu@$(cat output.txt | jq -r '.vault_hsm_ip.value'):~
