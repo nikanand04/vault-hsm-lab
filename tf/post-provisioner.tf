@@ -86,7 +86,7 @@ resource "null_resource" "configure-vault-hsm" {
       type        = "ssh"
       user        = "ubuntu"
       private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-ent.public_ip
+      host        = aws_eip.vault-hsm.public_ip
     }
   }
 
@@ -110,7 +110,7 @@ resource "null_resource" "configure-vault-hsm" {
       type        = "ssh"
       user        = "ubuntu"
       private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-ent.public_ip
+      host        = aws_eip.vault-hsm.public_ip
     }
   }
 
