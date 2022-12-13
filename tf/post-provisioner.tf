@@ -39,7 +39,7 @@ resource "null_resource" "configure-vault-ent" {
 
   provisioner "file" {
     source      = "./privateKey.pem"
-    destination = "/home/ubuntu/"
+    destination = "/home/ubuntu/privateKey.pem"
 
     connection {
       type        = "ssh"
@@ -104,7 +104,7 @@ resource "null_resource" "configure-vault-hsm" {
 
   provisioner "file" {
     source      = "./privateKey.pem"
-    destination = "/home/ubuntu/"
+    destination = "/home/ubuntu/privateKey.pem"
 
     connection {
       type        = "ssh"
