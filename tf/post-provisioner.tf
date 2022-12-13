@@ -12,8 +12,8 @@ resource "null_resource" "configure-vault-ent" {
     content = templatefile("./files/templates/output.tftpl",
       { hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
         rds_endpoint   = aws_db_instance.vault.endpoint,
-        vault_ent_ip   = aws_instance.vault-ent.public_ip,
-        vault_hsm_ip   = aws_instance.vault-hsm.public_ip
+        vault_ent_ip   = aws_eip.vault-ent.public_ip,
+        vault_hsm_ip   = aws_eip.vault-hsm.public_ip
     })
     destination = "/home/ubuntu/output.txt"
 
@@ -77,8 +77,8 @@ resource "null_resource" "configure-vault-hsm" {
     content = templatefile("./files/templates/output.tftpl",
       { hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
         rds_endpoint   = aws_db_instance.vault.endpoint,
-        vault_ent_ip   = aws_instance.vault-ent.public_ip,
-        vault_hsm_ip   = aws_instance.vault-hsm.public_ip
+        vault_ent_ip   = aws_eip.vault-ent.public_ip,
+        vault_hsm_ip   = aws_eip.vault-hsm.public_ip
     })
     destination = "/home/ubuntu/output.txt"
 
