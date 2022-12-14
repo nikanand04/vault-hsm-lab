@@ -68,8 +68,8 @@ HSM_IP=$(aws cloudhsmv2 describe-clusters \
 # ref. https://docs.aws.amazon.com/cloudhsm/latest/userguide/cmu-install-and-configure-client-linux.html
 sudo /opt/cloudhsm/bin/configure -a "${HSM_IP}"
 
-sudo cp pki/ca.crt /opt/cloudhsm/etc/ca.crt
-sudo chmod 644 /opt/cloudhsm/etc/ca.crt
+sudo cp pki/ca.crt /opt/cloudhsm/etc/customerCA.crt
+sudo chmod 644 /opt/cloudhsm/etc/customerCA.crt
 
 ### non-interactive method
 sudo /opt/cloudhsm/bin/configure-cli -a "${HSM_IP}"
