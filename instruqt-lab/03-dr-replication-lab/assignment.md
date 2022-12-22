@@ -1,6 +1,6 @@
 ---
 slug: dr-replication-lab
-id:
+id: iebvtghjul1e
 type: challenge
 title: "\U0001F3E1 HowTo: Setup DR Replication"
 teaser: |
