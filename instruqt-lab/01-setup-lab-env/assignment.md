@@ -2,9 +2,9 @@
 slug: setup-lab-env
 id: h60ytzxh5fyi
 type: challenge
-title: "\U0001F3E1 HowTo: Vault w/ Setup AWS Cloud HSM"
+title: "\U0001F3E1 Build lab environment"
 teaser: |
-  Step by step walkthrough for setting up vault with and HSM
+  Use terraform to deploy a lab where you will build a vault enterprise environment
 notes:
 - type: text
   contents: |
@@ -20,11 +20,6 @@ tabs:
   type: code
   hostname: workstation
   path: /root/vault-hsm-lab/tf
-- title: AWS Console
-  type: service
-  hostname: cloud-client
-  path: /
-  port: 80
 difficulty: basic
 timelimit: 14400
 ---
