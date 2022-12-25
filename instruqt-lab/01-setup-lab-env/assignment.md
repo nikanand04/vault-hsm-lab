@@ -1,6 +1,6 @@
 ---
 slug: setup-lab-env
-id: h60ytzxh5fyi
+id: a7pyxrdf0ekc
 type: challenge
 title: "\U0001F3E1 Build lab environment"
 teaser: |
@@ -13,9 +13,15 @@ tabs:
 - title: Workstation
   type: terminal
   hostname: workstation
-- title: HSM
+- title: hashi-workstation
   type: terminal
-  hostname: workstation
+  hostname: hashiwrkst
+- title: lab client
+  type: terminal
+  hostname: labclient
+- title: vsc client
+  type: terminal
+  hostname: vscclient
 - title: Text Editor
   type: code
   hostname: workstation

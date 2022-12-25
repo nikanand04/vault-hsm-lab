@@ -1,5 +1,5 @@
 slug: vault-hsm-lab
-id: iqicxxcuwldy
+id: urpwwepo1bcl
 title: How to setup Vault Enterprise with HSM Integration
 teaser: |
   Walkthrough the setup of Vault Enterprise with HSM Integration
@@ -13,5 +13,5 @@ tags:
 owner: hashicorp
 developers:
 - jbradley@hashicorp.com
-checksum: "5823594798805930191"
+checksum: "13113863444062699680"
 timelimit: 14400

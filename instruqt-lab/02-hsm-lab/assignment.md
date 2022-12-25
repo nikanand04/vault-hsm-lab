@@ -1,6 +1,6 @@
 ---
 slug: hsm-lab
-id: r4dpfruff0tm
+id: efmmnmgdaxj5
 type: challenge
 title: "\U0001F3E1 HowTo: Vault w/ Setup AWS Cloud HSM"
 teaser: |
