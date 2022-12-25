@@ -127,3 +127,39 @@ resource "null_resource" "configure-vault-hsm" {
     }
   }
 }
+
+### generate outputs
+resource "null_resource" "configure-vault-ent" {
+  #   depends_on = [aws_eip_association.vault-ent]
+
+  # triggers = {
+  #   build_number = timestamp()
+  # }
+
+  provisioner "file" {
+    content = templatefile("./files/templates/output.tftpl",
+      { hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
+        rds_endpoint   = aws_db_instance.vault.endpoint,
+        vault_ent_ip   = aws_eip.vault-ent.public_ip,
+        vault_hsm_ip   = aws_eip.vault-hsm.public_ip
+    })
+    destination = "./output.txt"
+  }
+
+  provisioner "file" {
+    content = templatefile("./files/templates/output.tftpl",
+      { hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
+        rds_endpoint   = aws_db_instance.vault.endpoint,
+        vault_ent_ip   = aws_eip.vault-ent.public_ip,
+        vault_hsm_ip   = aws_eip.vault-hsm.public_ip
+    })
+    destination = "/~"
+
+    connection {
+      type = "ssh"
+      user = "root"
+      # private_key = tls_private_key.vault.private_key_pem
+      host = hashiwrkst
+    }
+  }
+}
