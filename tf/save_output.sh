@@ -24,9 +24,25 @@ fi
 # readonly __XFR_FILES=(output.txt access_key.txt secret_key.txt)
 readonly __XFR_FILES=(output.txt)
 
-terraform output -json >output.txt
+# terraform output -json >output.txt
 
 # for i in "${__XFR_FILES[@]}"; do
 # 	scp -i privateKey.pem ${i} ubuntu@$(cat output.txt | jq -r '.vault_ent_ip.value'):~
 # 	scp -i privateKey.pem ${i} ubuntu@$(cat output.txt | jq -r '.vault_hsm_ip.value'):~
 # done
+tee output.txt &>/dev/null <<EOF
+{
+	"hsm_cluster_id": {
+		"value": "${HSM_CLUSTER_ID}"
+	},
+	"rds_endpoint": {
+		"value": "${RDS_ENDPOINT}"
+	},
+	"vault_ent_ip": {
+		"value": "${VAULT_ENT_IP}"
+	},
+	"vault_hsm_ip": {
+		"value": "${VAULT_HSM_IP}"
+	}
+}
+EOF
