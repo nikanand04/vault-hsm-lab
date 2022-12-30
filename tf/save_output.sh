@@ -44,7 +44,7 @@ tee output.txt &>/dev/null <<EOF
 EOF
 
 for i in "${__XFR_FILES[@]}"; do
-	scp -i privateKey.pem "${i}" root@hashiwrkst:~
-	scp -i privateKey.pem "${i}" root@labclient:~
-	scp -i privateKey.pem "${i}" root@vscclient:~
+	scp -i "${i}" root@hashiwrkst:~
+	scp -i "${i}" root@labclient:~
+	scp -i "${i}" root@vscclient:~
 done
