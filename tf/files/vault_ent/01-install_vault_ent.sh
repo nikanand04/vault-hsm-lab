@@ -55,6 +55,7 @@ install_vault() {
   fi
   if curl -h 2 &>/dev/null; then
     nettool="curl"
+    echo ${nettool}
   # elif wget -h 2 &>/dev/null; then
   #   nettool="wget"
   else
