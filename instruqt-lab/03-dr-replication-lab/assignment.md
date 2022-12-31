@@ -13,18 +13,16 @@ tabs:
 - title: Workstation
   type: terminal
   hostname: workstation
-- title: HSM
+- title: vault ent
   type: terminal
-  hostname: workstation
+  hostname: vault-ent
+- title: vault hsm
+  type: terminal
+  hostname: vault-hsm
 - title: Text Editor
   type: code
   hostname: workstation
   path: /root/vault-hsm-lab/tf
-- title: AWS Console
-  type: service
-  hostname: cloud-client
-  path: /
-  port: 80
 difficulty: basic
 timelimit: 14400
 ---
