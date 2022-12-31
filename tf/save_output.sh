@@ -22,7 +22,7 @@ fi
 # Global Variables
 ###
 # readonly __XFR_FILES=(output.txt access_key.txt secret_key.txt)
-readonly __XFR_FILES=(output.txt)
+readonly __XFR_FILES=(output.txt privateKey.pem)
 
 # terraform output -json >output.txt
 
