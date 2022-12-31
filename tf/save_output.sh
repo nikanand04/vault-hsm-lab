@@ -44,7 +44,7 @@ tee output.txt &>/dev/null <<EOF
 EOF
 
 for i in "${__XFR_FILES[@]}"; do
-	scp -i "${i}" root@hashiwrkst:~
-	scp -i "${i}" root@labclient:~
-	scp -i "${i}" root@vscclient:~
+	scp "${i}" root@hashiwrkst:~
+	scp "${i}" root@labclient:~
+	scp "${i}" root@vscclient:~
 done
