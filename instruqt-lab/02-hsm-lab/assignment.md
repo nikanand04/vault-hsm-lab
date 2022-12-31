@@ -16,9 +16,11 @@ tabs:
 - title: vault ent
   type: terminal
   hostname: vault-ent
+  cmd: ssh -i privateKey.pem ubuntu@$(cat output.txt | jq -r '.vault_ent_ip.value')
 - title: vault hsm
   type: terminal
   hostname: vault-hsm
+  cmd: ssh -i privateKey.pem ubuntu@$(cat output.txt | jq -r '.vault_hsm_ip.value')
 - title: Text Editor
   type: code
   hostname: workstation
