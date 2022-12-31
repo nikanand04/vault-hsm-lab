@@ -2,11 +2,12 @@
 
 ### enterprise vault instance
 resource "null_resource" "configure-vault-ent" {
-  #   depends_on = [aws_eip_association.vault-ent]
-
-  # triggers = {
-  #   build_number = timestamp()
-  # }
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = tls_private_key.vault.private_key_pem
+    host        = aws_eip.vault-ent.public_ip
+  }
 
   provisioner "file" {
     content = templatefile("./files/templates/output.tftpl",
@@ -16,37 +17,16 @@ resource "null_resource" "configure-vault-ent" {
         vault_hsm_ip   = aws_eip.vault-hsm.public_ip
     })
     destination = "/home/ubuntu/output.txt"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-ent.public_ip
-    }
   }
 
   provisioner "file" {
     source      = "./files/vault_ent/"
     destination = "/home/ubuntu/"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-ent.public_ip
-    }
   }
 
   provisioner "file" {
     source      = "./privateKey.pem"
     destination = "/home/ubuntu/privateKey.pem"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-ent.public_ip
-    }
   }
 
   provisioner "remote-exec" {
@@ -55,23 +35,17 @@ resource "null_resource" "configure-vault-ent" {
       "chmod +x tf_remote_provision",
       "./tf_remote_provision",
     ]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-ent.public_ip
-    }
   }
 }
 
 ### hsm vault instance
 resource "null_resource" "configure-vault-hsm" {
-  #   depends_on = [aws_eip_association.vault-hsm]
-
-  # triggers = {
-  #   build_number = timestamp()
-  # }
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = tls_private_key.vault.private_key_pem
+    host        = aws_eip.vault-hsm.public_ip
+  }
 
   provisioner "file" {
     content = templatefile("./files/templates/output.tftpl",
@@ -81,77 +55,29 @@ resource "null_resource" "configure-vault-hsm" {
         vault_hsm_ip   = aws_eip.vault-hsm.public_ip
     })
     destination = "/home/ubuntu/output.txt"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-hsm.public_ip
-    }
   }
 
   provisioner "file" {
     source      = "./files/vault_hsm/"
     destination = "/home/ubuntu/"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-hsm.public_ip
-    }
   }
 
   provisioner "file" {
     source      = "./privateKey.pem"
     destination = "/home/ubuntu/privateKey.pem"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-hsm.public_ip
-    }
   }
 
   provisioner "remote-exec" {
     inline = [
       "sudo sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config",
     ]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.vault.private_key_pem
-      host        = aws_eip.vault-hsm.public_ip
-    }
   }
 }
 
 ### generate outputs
 resource "null_resource" "client-nodes" {
-  # provisioner "file" {
-  #   content = templatefile("./files/templates/output.tftpl",
-  #     { hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
-  #       rds_endpoint   = aws_db_instance.vault.endpoint,
-  #       vault_ent_ip   = aws_eip.vault-ent.public_ip,
-  #       vault_hsm_ip   = aws_eip.vault-hsm.public_ip
-  #   })
-  #   destination = "./output.txt"
-  # }
-
-  # provisioner "file" {
-  #   content = templatefile("./files/templates/output.tftpl",
-  #     { hsm_cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
-  #       rds_endpoint   = aws_db_instance.vault.endpoint,
-  #       vault_ent_ip   = aws_eip.vault-ent.public_ip,
-  #       vault_hsm_ip   = aws_eip.vault-hsm.public_ip
-  #   })
-  #   destination = "/root/output.txt"
-  # }
-
   provisioner "local-exec" {
-    command = "chmod +x *output.sh && ./save_output.sh"
+    command = "chmod +x save_output.sh && ./save_output.sh"
     environment = {
       HSM_CLUSTER_ID = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id,
       RDS_ENDPOINT   = aws_db_instance.vault.endpoint,
