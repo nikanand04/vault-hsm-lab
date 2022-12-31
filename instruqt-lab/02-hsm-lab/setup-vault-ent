@@ -1,0 +1,9 @@
+#!/bin/bash -l
+# This is the setup script for the workstation container. Use it to set the stage for your terraform training, demo, or lab.
+set -e
+
+# login into target vault ent instance
+sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
+ssh -i privateKey.pem ubuntu@"$(cat output.txt | jq -r '.vault_ent_ip.value')"
+
+exit 0
