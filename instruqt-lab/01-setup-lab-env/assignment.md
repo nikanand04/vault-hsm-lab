@@ -13,15 +13,12 @@ tabs:
 - title: Workstation
   type: terminal
   hostname: workstation
-- title: hashi-workstation
+- title: vault ent
   type: terminal
-  hostname: hashiwrkst
-- title: lab client
+  hostname: vault-ent
+- title: vault hsm
   type: terminal
-  hostname: labclient
-- title: vsc client
-  type: terminal
-  hostname: vscclient
+  hostname: vault-hsm
 - title: Text Editor
   type: code
   hostname: workstation

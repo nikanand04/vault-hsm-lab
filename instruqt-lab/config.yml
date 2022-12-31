@@ -9,16 +9,12 @@ containers:
   image: gcr.io/instruqt/cloud-client
   ports: [80]
   shell: /bin/bash
-- name: hashiwrkst
+- name: vault-ent
   image: gcr.io/instruqt-hashicorp/hashiworkstation:vsc
   shell: /bin/bash
   memory: 256
-- name: labclient
-  image: gcr.io/instruqt-hashicorp/lab-client:1.9.2
-  shell: /bin/bash
-  memory: 256
-- name: vscclient
-  image: gcr.io/instruqt-hashicorp/vsc:latest
+- name: vault-hsm
+  image: gcr.io/instruqt-hashicorp/hashiworkstation:vsc
   shell: /bin/bash
   memory: 256
 aws_accounts:
