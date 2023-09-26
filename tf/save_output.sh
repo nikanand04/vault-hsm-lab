@@ -44,6 +44,6 @@ tee output.txt &>/dev/null <<EOF
 EOF
 
 for i in "${__XFR_FILES[@]}"; do
-	scp "${i}" root@vault-ent:~
-	scp "${i}" root@vault-hsm:~
+	scp "${i}" root@${VAULT_ENT_IP}:~
+	scp "${i}" root@${VAULT_HSM_IP}:~
 done
